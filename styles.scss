@@ -1,0 +1,28 @@
+@import './styles/colors.scss';
+
+body {
+    background-color: $app-background;
+}
+
+$radius: 5px;
+$tile-size: 80px;
+
+#game-board {
+    background-color: $board-background;
+    width: 500px;
+    height: 500px;
+    border: $radius solid $board-background;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+
+    & > div {
+        background-color: $empty-tile-background;
+        width: $tile-size;
+        height: $tile-size;
+        padding: 15px;
+        border-radius: $radius;
+    }
+}
