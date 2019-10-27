@@ -6,19 +6,26 @@
   "scripts": {
     "dev": "parcel index.html",
     "build": "parcel build index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r @babel/register -r ts-node/register ./tests/*.spec.**",
+    "test:watch": "mocha --watch -r @babel/register -r ts-node/register ./tests/*.spec.**"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
     "chai": "^4.2.0",
     "eslint": "^6.6.0",
     "mocha": "^6.2.2",
     "parcel-bundler": "^1.12.4",
     "prettier": "^1.18.2",
+    "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "dependencies": {
+    "@babel/register": "^7.6.2",
     "node-sass": "^4.13.0"
   }
 }
