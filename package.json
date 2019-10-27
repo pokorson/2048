@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@babel/register": "^7.6.2",
-    "node-sass": "^4.13.0"
+    "node-sass": "^4.13.0",
+    "uuid": "^3.3.3"
   }
 }
