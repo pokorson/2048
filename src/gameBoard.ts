@@ -107,7 +107,6 @@ function findLastAvailablePosition(row: number[], tileIndex: number): number {
 }
 
 
-
 function shiftValuesToIndex(row: number[], index: number): number[] {
     let resultRow = [...row];
     return [...resultRow.slice(0, index), ...resultRow.slice(index + 1), 0];
@@ -197,4 +196,30 @@ export function moveTiles(board: GameBoard, direction: MoveDirection): GameBoard
     // console.log(serializeBoard(getRotatedBoard(createBoard(mergedBoard), reverseTransposition[direction])), serializeBoard(board));
     
     return getRotatedBoard(createBoard(mergedBoard), reverseTransposition[direction]);
+}
+
+function createTileElement(tile: Tile, {position}) {
+    const TOP_OFFSET = 5;
+    const LEFT_OFFSET = 5;
+    const tileElement = document.createElement('div');
+
+    tileElement.innerText = tile.value.toString();
+    tileElement.classList.add('tile');
+    tileElement.style.top = (TOP_OFFSET + position.y * 125).toString();
+    tileElement.style.left = (LEFT_OFFSET + position.x * 125).toString();
+    return tileElement;
+}
+
+export function renderGameBoard(board: GameBoard, elementSelector: string) {
+    const element = document.getElementById(elementSelector);
+    const result = document.createElement('div');
+
+    board.boardState.forEach((row, rowIndex) => {
+        row.forEach((tile, tileIndex) => {
+            const tileElement = createTileElement(tile, {position: {x: tileIndex, y: rowIndex}});
+            result.appendChild(tileElement);
+        })
+    })
+
+    element.appendChild(result);
 }
