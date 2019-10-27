@@ -73,18 +73,22 @@ function canMoveRows(board: GameBoard): boolean {
     );
 }
 
-function getTransposedBoard(board: GameBoard): GameBoard {
-    let newBoard = [[], [], [], []];
+export function getRotatedBoard(board: GameBoard, transpositions: number = 1): GameBoard {
+    if(transpositions === 0) return board;
+
+    let newBoard = serializeBoard(board);
+    
     board.boardState.forEach((row, rowIndex) => {
         row.forEach((tile, tileIndex) => {
             newBoard[board.boardState.length - tileIndex - 1][rowIndex] = tile.value;
         })
     });
-    return createBoard(newBoard);
+
+    return getRotatedBoard(createBoard(newBoard), transpositions - 1);
 }
 
 function canMoveColumns(board): boolean {
-    const transposedBoard = getTransposedBoard(board);
+    const transposedBoard = getRotatedBoard(board);
     return canMoveRows(transposedBoard);
 }
 
@@ -102,13 +106,17 @@ function findLastAvailablePosition(row: number[], tileIndex: number): number {
     return tileIndex;
 }
 
+
+
 function shiftValuesToIndex(row: number[], index: number): number[] {
     let resultRow = [...row];
     return [...resultRow.slice(0, index), ...resultRow.slice(index + 1), 0];
 }
 
-function mergeValuesInRow(row: number[]): number[] {
-    let resultRow = [...row];
+type MergeDirection = 'left' | 'right';
+
+function mergeValuesInRow(row: number[], direction: MergeDirection = 'left'): number[] {
+    let resultRow = direction === 'left' ? [...row] : row.reverse();
     for(let i = 0; i < row.length ; i++) {
         const value = resultRow[i];
         const prevValue = resultRow[i - 1];
@@ -120,27 +128,73 @@ function mergeValuesInRow(row: number[]): number[] {
         }
     }
     
-    return resultRow;
+    return direction === 'left' ? resultRow : resultRow.reverse();
 }
 
-export function moveTiles(board: GameBoard): GameBoard {
-    let mergedBoard = serializeBoard(board);
+function shiftValuesInRow(row: number[], direction: MergeDirection): number[] {
+    if (direction === 'left') {
+        let resultRow = [...row];
+        for(let i = 0; i < row.length ; i++) {
+            const prevValue = resultRow[i - 1];
+            if(prevValue !== undefined && prevValue === 0) {
+                const lastAvailablePosition = findLastAvailablePosition(resultRow, i);
+                resultRow[lastAvailablePosition] = resultRow[i];
+                resultRow[i] = 0;
+            }
+        }
+        return resultRow;
+    } else {
+        let resultRow = row.reverse();
+        for(let i = 0; i < row.length ; i++) {
+            const prevValue = resultRow[i - 1];
+            if(prevValue !== undefined && prevValue === 0) {
+                const lastAvailablePosition = findLastAvailablePosition(resultRow, i);
+                resultRow[lastAvailablePosition] = resultRow[i];
+                resultRow[i] = 0;
+            }
+        }
+        return resultRow.reverse();
+    }
+}
 
-    mergedBoard.forEach((row, rowIndex) => {
-        row.forEach((value, tileIndex) => {
-            const prevTile = row[tileIndex - 1];
-            if (prevTile !== undefined && prevTile === 0) {
-                const lastAvailablePosition = findLastAvailablePosition(row, tileIndex);
-                mergedBoard[rowIndex][lastAvailablePosition] = value;
-                mergedBoard[rowIndex][tileIndex] = 0;
-            }
-             else {
-                mergedBoard[rowIndex][tileIndex] = value;
-            }
-        })
+type MoveDirection = 'left' | 'right' | 'up' | 'down';
+
+export function moveTiles(board: GameBoard, direction: MoveDirection): GameBoard {
+    const transpotionsCount = {
+        'left': 0,
+        'down': 1,
+        'right': 0,
+        'up': 1
+    }
+    const reverseTransposition = {
+        'left': 0,
+        'down': 3,
+        'right': 0,
+        'up': 3
+    }
+    const mergeDirection: Record<MoveDirection, MergeDirection> = {
+        'left': 'left',
+        'down': 'right',
+        'right': 'right',
+        'up': 'left'
+    }
+    let rotatedBoard = serializeBoard(
+        getRotatedBoard(board, transpotionsCount[direction])
+    );
+
+    // console.log(rotatedBoard, serializeBoard(board));
+
+    const movedBoard = rotatedBoard.map((row) => {
+        return shiftValuesInRow(row, mergeDirection[direction]);
     });
 
-    mergedBoard = mergedBoard.map(mergeValuesInRow);
+    // console.log('MOVED BOARD:\n')
+
+    // console.log(movedBoard, serializeBoard(board));
+
+    const mergedBoard = movedBoard.map((row) => mergeValuesInRow(row, mergeDirection[direction]));
+
+    // console.log(serializeBoard(getRotatedBoard(createBoard(mergedBoard), reverseTransposition[direction])), serializeBoard(board));
     
-    return createBoard(mergedBoard);
+    return getRotatedBoard(createBoard(mergedBoard), reverseTransposition[direction]);
 }
