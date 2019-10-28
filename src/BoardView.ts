@@ -25,7 +25,13 @@ const BoardView = {
             (row, rowIndex) => {
                 row.forEach(
                     (tile, tileIndex) => {
+                        if (Array.isArray(tile)) {
+                            insertOrUpdateTileElement(tile[0], { x: tileIndex, y: rowIndex }, targetEl);
+                            insertOrUpdateTileElement(tile[1], { x: tileIndex, y: rowIndex }, targetEl);
+                            return;
+                        }
                         if (tile.value === 0) return;
+
                         insertOrUpdateTileElement(tile, { x: tileIndex, y: rowIndex }, targetEl);
                     }
                 )
