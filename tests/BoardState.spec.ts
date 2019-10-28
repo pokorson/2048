@@ -55,7 +55,7 @@ describe.only('BoardState', () => {
                 [4, 2, 0, 0],
                 [0, 0, 0, 0],
             ]);
-            board.moveAllTiles('left');
+            board.shiftAllTiles('left');
             expect(
                 board.serialize()
             ).to.deep.equal(expectedBoardState);
@@ -69,7 +69,7 @@ describe.only('BoardState', () => {
                 [0, 0, 4, 2],
                 [0, 0, 0, 0],
             ]);
-            board.moveAllTiles('right')
+            board.shiftAllTiles('right')
             expect(
                 board.serialize(),
             ).to.deep.equal(expectedBoardState);
@@ -83,7 +83,7 @@ describe.only('BoardState', () => {
                 [0, 2, 4, 0],
                 [0, 4, 2, 0],
             ]);
-            board.moveAllTiles('down');
+            board.shiftAllTiles('down');
             expect(
                 board.serialize()
             ).to.deep.equal(expectedBoardState);
@@ -97,7 +97,7 @@ describe.only('BoardState', () => {
                 [0, 0, 0, 0],
                 [0, 0, 0, 0],
             ];
-            board.moveAllTiles('up');
+            board.shiftAllTiles('up');
             expect(
                 board.serialize()
             ).to.deep.equal(expectedBoardState);
@@ -118,7 +118,7 @@ describe.only('BoardState', () => {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            board.moveAllTiles('left');
+            board.shiftAllTiles('left');
             expect(
                 board.serialize(),
             ).to.deep.equal(expectedBoardState);
@@ -139,19 +139,19 @@ describe.only('BoardState', () => {
                 [2, 4, 8, 4],
                 [4, 2, 4, 8],
             ]);
-            board.moveAllTiles('left');
+            board.shiftAllTiles('left');
             expect(
                 board.serialize(),
             ).to.deep.equal(expectedBoardState);
-            board.moveAllTiles('right');
+            board.shiftAllTiles('right');
             expect(
                 board.serialize(),
             ).to.deep.equal(expectedBoardState);
-            board.moveAllTiles('up');
+            board.shiftAllTiles('up');
             expect(
                 board.serialize(),
             ).to.deep.equal(expectedBoardState);
-            board.moveAllTiles('down');
+            board.shiftAllTiles('down');
             expect(
                 board.serialize(),
             ).to.deep.equal(expectedBoardState);
@@ -172,7 +172,7 @@ describe.only('BoardState', () => {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            board.moveAllTiles('left');
+            board.shiftAllTiles('left');
             expect(
                 board.serialize()
             ).to.deep.equal(expectedResult);
@@ -193,7 +193,7 @@ describe.only('BoardState', () => {
                 [4, [8, 8], 4, 0],
                 [4, 2, [4, 4], 0],
             ]);
-            board.moveAllTiles('left')
+            board.shiftAllTiles('left')
             expect(
                 board.serialize()
             ).to.deep.equal(expectedResult);
@@ -213,7 +213,7 @@ describe.only('BoardState', () => {
                 [4, 2, 4, 8],
             ]);
 
-            board2.moveAllTiles('left')
+            board2.shiftAllTiles('left')
 
             expect(
                 board2.serialize()
@@ -235,7 +235,7 @@ describe.only('BoardState', () => {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            board.moveAllTiles('left');
+            board.shiftAllTiles('left');
             expect(
                 board.serialize()
             ).to.deep.equal(expectedResult);
@@ -257,7 +257,7 @@ describe.only('BoardState', () => {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            board.moveAllTiles('left');
+            board.shiftAllTiles('left');
             expect(
                 board.serialize()
             ).to.deep.equal(expectedResult);

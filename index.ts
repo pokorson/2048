@@ -36,7 +36,7 @@ document.addEventListener('keyup', (event) => {
     console.log('Initial state:');
     board.print();
 
-    board.moveAllTiles(direction);
+    board.shiftAllTiles(direction);
     BoardView.renderBoard(board, boardElement);
 
     board.mergeTiles();
