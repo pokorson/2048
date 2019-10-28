@@ -12,6 +12,7 @@ let gameOver = false;
 BoardView.renderBoard(board2, document.getElementById('game-board'));
 
 document.addEventListener('keyup', (event) => {
+    const boardElement = document.getElementById('game-board');
     if (gameOver) return;
     const arrowKeyDirectionMap = {
         'ArrowDown': 'down',
@@ -28,13 +29,13 @@ document.addEventListener('keyup', (event) => {
     board2.print();
 
     board2.moveAllTiles(direction);
-    BoardView.renderBoard(board2, document.getElementById('game-board'));
+    BoardView.renderBoard(board2, boardElement);
 
     board2.mergeTiles();
-    BoardView.renderBoard(board2, document.getElementById('game-board'));
+    BoardView.renderBoard(board2, boardElement);
 
     board2.insertNewTileAtRandom();
-    BoardView.renderBoard(board2, document.getElementById('game-board'));
+    BoardView.renderBoard(board2, boardElement);
 
     console.log('Final state:');
     board2.print();
