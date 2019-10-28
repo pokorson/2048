@@ -1,11 +1,8 @@
 import { renderGameBoard, createBoard, moveTiles, addNewTile, boardHasPossibleMoves } from './src/gameBoard';
 
-let board = createBoard([
-    [4, 4, 8, 2],
-    [4, 2, 4, 8],
-    [2, 4, 8, 2],
-    [4, 2, 4, 8],
-]);
+let board = createBoard();
+board = addNewTile(board);
+board = addNewTile(board);
 
 let gameOver = false;
 
