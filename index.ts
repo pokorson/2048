@@ -1,4 +1,4 @@
-import { renderGameBoard, createBoard, moveTiles, addNewTile, boardHasPossibleMoves, initBoard } from './src/gameBoard';
+import { renderGameBoard, moveTiles, addNewTile, boardHasPossibleMoves, initBoard } from './src/gameBoard';
 
 let board = initBoard();
 

@@ -1,67 +1,10 @@
-import {expect} from 'chai';
-import {createBoard, boardHasPossibleMoves, moveTiles, getRotatedBoard} from '../src/gameBoard';
+import { expect } from 'chai';
+import { createBoard, boardHasPossibleMoves, serializeBoard, moveTiles, getRotatedBoard, areBoardsEqual } from '../src/gameBoard';
 
-describe('gameBoard', function() {
+describe('gameBoard', function () {
     describe('#getRotatedBoard', () => {
-        it('rotates board 1 time correctly', function() {
-            const board = createBoard([
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-            ]);
-            expect(getRotatedBoard(board)).to.deep.equal(
-                createBoard([
-                    [2, 8, 2, 8],
-                    [8, 4, 8, 4],
-                    [4, 2, 4, 2],
-                    [2, 4, 2, 4],
-                ])
-            );
-        })
-
-        it('rotates board 2 times correctly', function() {
-            const board = createBoard([
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-            ]);
-            expect(getRotatedBoard(board, 2)).to.deep.equal(
-                createBoard([
-                    [8, 4, 2, 4],
-                    [2, 8, 4, 2],
-                    [8, 4, 2, 4],
-                    [2, 8, 4, 2],
-                ])
-            );
-        })
-
-        it('rotates board 3 times correctly', function() {
-            const board = createBoard([
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-            ]);
-            expect(getRotatedBoard(board, 3)).to.deep.equal(
-                createBoard([
-                    [4, 2, 4, 2],
-                    [2, 4, 2, 4],
-                    [4, 8, 4, 8],
-                    [8, 2, 8, 2],
-                ])
-            );
-        })
-
-        it('rotates board 4 times correctly', function() {
-            const board = createBoard([
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-                [2, 4, 8, 2],
-                [4, 2, 4, 8],
-            ]);
-            expect(getRotatedBoard(board, 4)).to.deep.equal(
+        it('rotates board 1 time correctly', function () {
+            const board = getRotatedBoard(
                 createBoard([
                     [2, 4, 8, 2],
                     [4, 2, 4, 8],
@@ -69,11 +12,85 @@ describe('gameBoard', function() {
                     [4, 2, 4, 8],
                 ])
             );
+            expect(
+                areBoardsEqual(board,
+                    createBoard([
+                        [2, 8, 2, 8],
+                        [8, 4, 8, 4],
+                        [4, 2, 4, 2],
+                        [2, 4, 2, 4],
+                    ])
+                )
+            ).to.be.true;
+        })
+
+        it('rotates board 2 times correctly', function () {
+            const board = getRotatedBoard(
+                createBoard([
+                    [2, 4, 8, 2],
+                    [4, 2, 4, 8],
+                    [2, 4, 8, 2],
+                    [4, 2, 4, 8],
+                ]), 2
+            );
+            expect(
+                areBoardsEqual(board,
+                    createBoard([
+                        [8, 4, 2, 4],
+                        [2, 8, 4, 2],
+                        [8, 4, 2, 4],
+                        [2, 8, 4, 2],
+                    ])
+                )
+            ).to.be.true
+        })
+
+        it('rotates board 3 times correctly', function () {
+            const board = getRotatedBoard(
+                createBoard([
+                    [2, 4, 8, 2],
+                    [4, 2, 4, 8],
+                    [2, 4, 8, 2],
+                    [4, 2, 4, 8],
+                ]), 3
+            );
+            expect(
+                areBoardsEqual(board,
+                    createBoard([
+                        [4, 2, 4, 2],
+                        [2, 4, 2, 4],
+                        [4, 8, 4, 8],
+                        [8, 2, 8, 2],
+                    ])
+                )
+            ).to.be.true
+
+        })
+
+        it('rotates board 4 times correctly', function () {
+            const board = getRotatedBoard(
+                createBoard([
+                    [2, 4, 8, 2],
+                    [4, 2, 4, 8],
+                    [2, 4, 8, 2],
+                    [4, 2, 4, 8],
+                ]), 4
+            );
+            expect(
+                areBoardsEqual(board,
+                    createBoard([
+                        [2, 4, 8, 2],
+                        [4, 2, 4, 8],
+                        [2, 4, 8, 2],
+                        [4, 2, 4, 8],
+                    ])
+                )
+            ).to.be.true;
         })
     })
 
-    describe('#boardHasPossibleMoves', function() {
-        it('returns false when board has no possible moves', function() {
+    describe('#boardHasPossibleMoves', function () {
+        it('returns false when board has no possible moves', function () {
             const board = createBoard([
                 [2, 4, 8, 2],
                 [4, 2, 4, 8],
@@ -83,7 +100,7 @@ describe('gameBoard', function() {
             expect(boardHasPossibleMoves(board)).to.be.false;
         })
 
-        it('returns true when board has at least one possible left/right move', function() {
+        it('returns true when board has at least one possible left/right move', function () {
             const board1 = createBoard([
                 [4, 4, 8, 2],
                 [4, 2, 4, 8],
@@ -91,17 +108,9 @@ describe('gameBoard', function() {
                 [4, 2, 4, 8],
             ]);
             expect(boardHasPossibleMoves(board1)).to.equal(true);
-
-            const board2 = createBoard([
-                [0, 0, 0, 0],
-                [0, 2, 2, 0],
-                [0, 0, 0, 0],
-                [0, 0, 0, 0],
-            ]);
-            expect(boardHasPossibleMoves(board2)).to.be.true;
         })
 
-        it('returns true when board has at least one possible up/down move', function() {
+        it('returns true when board has at least one possible up/down move', function () {
             const board = createBoard([
                 [2, 4, 8, 4],
                 [4, 2, 4, 8],
@@ -109,25 +118,17 @@ describe('gameBoard', function() {
                 [4, 2, 4, 8],
             ]);
             expect(boardHasPossibleMoves(board)).to.be.true;
-
-            const board2 = createBoard([
-                [2, 4, 8, 4],
-                [4, 2, 4, 8],
-                [4, 4, 2, 4],
-                [4, 2, 4, 8],
-            ]);
-            expect(boardHasPossibleMoves(board2)).to.be.true;
         })
     })
 
-    describe('#moveTiles', function() {
+    describe('#moveTiles', function () {
         const boardValues = [
             [0, 0, 0, 0],
             [0, 2, 4, 0],
             [0, 4, 2, 0],
             [0, 0, 0, 0],
         ];
-        it('moves all tiles from right to left', function() {
+        it('moves all tiles from right to left', function () {
             const initialBoard = createBoard(boardValues);
             const expectedResult = createBoard([
                 [0, 0, 0, 0],
@@ -135,10 +136,13 @@ describe('gameBoard', function() {
                 [4, 2, 0, 0],
                 [0, 0, 0, 0],
             ]);
-            expect(moveTiles(initialBoard, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(initialBoard, 'left'),
+                expectedResult
+            )).to.be.true;
         })
 
-        it('moves all tiles from left to right', function() {
+        it('moves all tiles from left to right', function () {
             const initialBoard = createBoard(boardValues);
             const expectedResult = createBoard([
                 [0, 0, 0, 0],
@@ -146,10 +150,13 @@ describe('gameBoard', function() {
                 [0, 0, 4, 2],
                 [0, 0, 0, 0],
             ]);
-            expect(moveTiles(initialBoard, 'right')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(initialBoard, 'right'),
+                expectedResult
+            )).to.be.true;
         })
 
-        it('moves all tiles from top to bottom', function() {
+        it('moves all tiles from top to bottom', function () {
             const initialBoard = createBoard(boardValues);
             const expectedResult = createBoard([
                 [0, 0, 0, 0],
@@ -157,10 +164,13 @@ describe('gameBoard', function() {
                 [0, 2, 4, 0],
                 [0, 4, 2, 0],
             ]);
-            expect(moveTiles(initialBoard, 'down')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(initialBoard, 'down'),
+                expectedResult
+            )).to.be.true;
         });
 
-        it('moves all tiles from bottom to top', function() {
+        it('moves all tiles from bottom to top', function () {
             const initialBoard = createBoard(boardValues);
             const expectedResult = createBoard([
                 [0, 2, 4, 0],
@@ -168,10 +178,13 @@ describe('gameBoard', function() {
                 [0, 0, 0, 0],
                 [0, 0, 0, 0],
             ]);
-            expect(moveTiles(initialBoard, 'up')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(initialBoard, 'up'),
+                expectedResult
+            )).to.be.true;
         });
 
-        it('moves all tiles to the last empty tile in row from right to left', function() {
+        it('moves all tiles to the last empty tile in row from right to left', function () {
             const board = createBoard([
                 [0, 0, 4, 2],
                 [4, 2, 4, 8],
@@ -184,10 +197,13 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(board, 'left'),
+                expectedResult
+            )).to.be.true;
         })
 
-        it('merges adjacent tiles when they have the same value', function() {
+        it('merges adjacent tiles when they have the same value', function () {
             const board = createBoard([
                 [2, 2, 0, 0],
                 [4, 2, 4, 8],
@@ -200,10 +216,13 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(board, 'left'),
+                expectedResult
+            )).to.be.true;
         })
 
-        it('merges adjacent tiles when they have the same value and place them at last available position', function() {
+        it('merges adjacent tiles when they have the same value and place them at last available position', function () {
             const board = createBoard([
                 [0, 2, 2, 0],
                 [4, 2, 4, 8],
@@ -216,7 +235,10 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(board, 'left'),
+                expectedResult
+            )).to.be.true;
 
             const board2 = createBoard([
                 [2, 2, 2, 0],
@@ -230,10 +252,13 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board2, 'left')).to.deep.equal(expectedResult2);
+            expect(areBoardsEqual(
+                moveTiles(board2, 'left'),
+                expectedResult2
+            )).to.be.true;
         })
 
-        it('merges tiles with gap between them when they have the same value and place them at last available position', function() {
+        it('merges tiles with gap between them when they have the same value and place them at last available position', function () {
             const board = createBoard([
                 [0, 2, 0, 2],
                 [4, 2, 4, 8],
@@ -246,10 +271,13 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(board, 'left'),
+                expectedResult
+            )).to.be.true;
         })
 
-        it('merges right tile to left one and place them at last available position', function() {
+        it('merges right tile to left one and place them at last available position', function () {
             const board = createBoard([
                 [0, 2, 2, 2],
                 [4, 2, 4, 8],
@@ -262,10 +290,13 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(board, 'left'),
+                expectedResult
+            )).to.be.true;
         })
 
-        it('merges all tile pairs with the same value and place them at last available position', function() {
+        it('merges all tile pairs with the same value and place them at last available position', function () {
             const board = createBoard([
                 [2, 2, 2, 2],
                 [4, 2, 4, 8],
@@ -278,7 +309,10 @@ describe('gameBoard', function() {
                 [4, 8, 2, 4],
                 [4, 2, 4, 8],
             ]);
-            expect(moveTiles(board, 'left')).to.deep.equal(expectedResult);
+            expect(areBoardsEqual(
+                moveTiles(board, 'left'),
+                expectedResult
+            )).to.be.true;
         })
     });
 })
