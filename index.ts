@@ -1,4 +1,3 @@
-import { renderGameBoard, moveTiles, addNewTile, boardHasPossibleMoves, initBoard } from './src/gameBoard';
 import BoardState from './src/BoardState';
 import BoardView from './src/BoardView';
 
