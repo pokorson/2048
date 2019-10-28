@@ -21,7 +21,7 @@ interface BoardPosition {
 
 interface BoardStateConstructorArgs {
     initialValues?: number[][];
-    onScore: (score: number) => void;
+    onScore?: (score: number) => void;
 }
 
 class BoardState {
