@@ -1,27 +1,51 @@
 import BoardState from './src/BoardState';
 import BoardView from './src/BoardView';
 
-let currentScore = 0;
 
 function handleScoreUpdate(score) {
     const scoreElement = document.getElementById('current-score');
-    currentScore = currentScore + score;
-    scoreElement.innerText = `Score: ${currentScore}`
+    gameState.score = gameState.score + score;
+    scoreElement.innerText = `Score: ${gameState.score}`
 }
 
-let board = new BoardState({
-    onScore: handleScoreUpdate
-});
-board.insertNewTileAtRandom();
-board.insertNewTileAtRandom();
+const gameState: {
+    board: BoardState,
+    score: number,
+    gameOver: boolean
+} = {
+    score: 0,
+    board: null,
+    gameOver: false,
+}
 
-let gameOver = false;
+function initGame() {
+    gameState.score = 0;
+    gameState.gameOver = false;
 
-BoardView.renderBoard(board, document.getElementById('tile-container'));
+    gameState.board = new BoardState({
+        onScore: handleScoreUpdate
+    })
+
+    gameState.board.insertNewTileAtRandom();
+    gameState.board.insertNewTileAtRandom();
+}
+
+function clearBoardElement() {
+    const gameContainer = document.getElementById('tile-container');
+    gameContainer.innerHTML = "";
+}
+
+function renderBoard() {
+    const gameContainer = document.getElementById('tile-container');
+
+    BoardView.renderBoard(
+        gameState.board,
+        gameContainer
+    );
+}
 
 document.addEventListener('keyup', (event) => {
-    const boardElement = document.getElementById('tile-container');
-    if (gameOver) return;
+    if (gameState.gameOver) return;
     const arrowKeyDirectionMap = {
         'ArrowDown': 'down',
         'ArrowUp': 'up',
@@ -31,33 +55,27 @@ document.addEventListener('keyup', (event) => {
     const direction = arrowKeyDirectionMap[event.key];
     if (!direction) return;
 
-    console.log("MOVING: " + direction);
-
-    console.log('Initial state:');
-    board.print();
+    const board = gameState.board;
 
     board.shiftAllTiles(direction);
-    BoardView.renderBoard(board, boardElement);
+    renderBoard();
 
     board.mergeTiles();
-    BoardView.renderBoard(board, boardElement);
+    renderBoard();
 
     board.insertNewTileAtRandom();
-    BoardView.renderBoard(board, boardElement);
-
-    console.log('Final state:');
-    board.print();
+    renderBoard();
 })
 
 document.getElementById('start-new-game').addEventListener('click', () => {
-    const boardElement = document.getElementById('tile-container');
-    gameOver = false;
-    board = new BoardState({ onScore: handleScoreUpdate });
-    board.insertNewTileAtRandom();
-    board.insertNewTileAtRandom();
-    boardElement.innerHTML = "";
-    currentScore = 0;
+    initGame();
+    clearBoardElement();
+
     const scoreElement = document.getElementById('current-score');
-    scoreElement.innerText = `Score: ${currentScore}`
-    BoardView.renderBoard(board, boardElement);
+    scoreElement.innerText = `Score: ${gameState.score}`;
+
+    renderBoard();
 })
+
+initGame();
+renderBoard();
