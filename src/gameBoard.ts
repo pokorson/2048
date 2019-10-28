@@ -1,3 +1,5 @@
+import { generateId } from './helpers';
+
 interface Tile {
     value: number;
 }
@@ -13,21 +15,21 @@ interface GameBoard {
 }
 
 export function createTile(value: number) {
-    return { value };
+    return { value, id: generateId() };
 }
 
-export function createBoard(board?: number[][]): GameBoard {
-    if (!board) {
-        return {
-            boardState: [
-                [{ value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }],
-                [{ value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }],
-                [{ value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }],
-                [{ value: 0 }, { value: 0 }, { value: 0 }, { value: 0 }]
-            ]
-        }
-    }
+function getTileValue(tile: Tile): number {
+    return tile.value;
+}
 
+const defaultBoardState = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
+]
+
+export function createBoard(board: number[][] = defaultBoardState): GameBoard {
     return {
         boardState:
             board.map(boardRow => {
@@ -43,18 +45,37 @@ export function initBoard(): GameBoard {
     return board;
 }
 
-function serializeBoard(board: GameBoard): number[][] {
+export function getTileAt(board: GameBoard, x: number, y: number): Tile {
+    return board.boardState[y][x];
+}
+
+export function areBoardsEqual(board1: GameBoard, board2: GameBoard): boolean {
+    let equal = true;
+    board1.boardState.forEach((row, rowIndex) => {
+        row.forEach((tile, tileIndex) => {
+            const board1Tile = getTileAt(board1, tileIndex, rowIndex);
+            const board2Tile = getTileAt(board2, tileIndex, rowIndex);
+
+            if (getTileValue(board1Tile) !== getTileValue(board2Tile)) {
+                equal = false;
+            }
+        })
+    })
+    return equal;
+}
+
+export function serializeBoard(board: GameBoard): number[][] {
     let serializedBoard = [[], [], [], []];
     board.boardState.forEach((row, rowIndex) => {
         row.forEach((tile, tileIndex) => {
-            serializedBoard[rowIndex][tileIndex] = tile.value;
+            serializedBoard[rowIndex][tileIndex] = getTileValue(tile);
         })
     })
     return serializedBoard;
 }
 
 function isEmptyTile(tile) {
-    return tile.value === 0;
+    return getTileValue(tile) === 0;
 }
 
 function rowHasEmptyTile(boardRow: BoardRow): boolean {
@@ -65,7 +86,7 @@ function rowHasPossibleMerge(boardRow: BoardRow): boolean {
     let isMergePossible = false;
     boardRow.forEach((tile, index) => {
         const nextTile = boardRow[index + 1];
-        if (nextTile && nextTile.value === tile.value) {
+        if (nextTile && getTileValue(nextTile) === getTileValue(tile)) {
             isMergePossible = true;
         }
     })
@@ -87,7 +108,7 @@ export function getRotatedBoard(board: GameBoard, transpositions: number = 1): G
 
     board.boardState.forEach((row, rowIndex) => {
         row.forEach((tile, tileIndex) => {
-            newBoard[board.boardState.length - tileIndex - 1][rowIndex] = tile.value;
+            newBoard[board.boardState.length - tileIndex - 1][rowIndex] = getTileValue(tile);
         })
     });
 
@@ -231,7 +252,7 @@ function createTileElement(tile: Tile, { position }) {
     const LEFT_OFFSET = 5;
     const tileElement = document.createElement('div');
 
-    tileElement.innerText = tile.value.toString();
+    tileElement.innerText = getTileValue(tile).toString();
     tileElement.classList.add('tile');
     tileElement.style.transform = `translate(${(LEFT_OFFSET + position.x * 125)}px, ${TOP_OFFSET + position.y * 125}px)`;
     return tileElement;
