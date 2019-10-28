@@ -46,9 +46,9 @@ class BoardState {
             ];
         }
 
-        this.state = boardShape.map(boardRow => {
-            return boardRow.map(tileValue => this.getNewTile(tileValue))
-        })
+        this.state = boardShape.map(boardRow =>
+            boardRow.map(tileValue => this.getNewTile(tileValue))
+        )
     }
 
     serialize = () => (
@@ -81,33 +81,25 @@ class BoardState {
         )
     }
 
-    hasPossibleMoves = (): boolean => {
-        let anyPossibleMove = false;
-        this.state.forEach((row, rowIndex) => {
-            row.forEach((tile, tileIndex) => {
-                const position = { x: tileIndex, y: rowIndex };
-                if (
-                    this.canMoveTile(position, { x: 1, y: 0 }) ||
-                    this.canMoveTile(position, { x: -1, y: 0 }) ||
-                    this.canMoveTile(position, { x: 0, y: 1 }) ||
-                    this.canMoveTile(position, { x: 0, y: -1 })
-                ) {
-                    anyPossibleMove = true
-                }
-
-            })
-        })
-        return anyPossibleMove;
+    hasTileAnyPossibleMoves = (position: BoardPosition): boolean => {
+        return this.canMoveTile(position, { x: 1, y: 0 }) ||
+            this.canMoveTile(position, { x: -1, y: 0 }) ||
+            this.canMoveTile(position, { x: 0, y: 1 }) ||
+            this.canMoveTile(position, { x: 0, y: -1 });
     }
 
-    getState = (): TileRow[] => {
-        return this.state;
+    hasAnyPossibleMoves = (): boolean => {
+        return this.state.some((row, rowIndex) => {
+            row.some((tile, tileIndex) => (
+                this.hasTileAnyPossibleMoves({ x: tileIndex, y: rowIndex })
+            ))
+        });
     }
 
+    getState = (): TileRow[] => (this.state)
     getNewTile = (value: number): Tile => ({ value, id: generateId() });
-    getTileAt = (position: BoardPosition): Tile | Tile[] => {
-        return this.state[position.y][position.x];
-    }
+    getTileAt = (position: BoardPosition): Tile | Tile[] => (this.state[position.y][position.x])
+
     insertNewTileAtRandom = () => {
         let emptyTilesPositions: BoardPosition[] = [];
         this.state.forEach((row, rowIndex) => {
@@ -132,12 +124,8 @@ class BoardState {
             })
         })
     }
-    clearTileAt = (position: BoardPosition) => {
-        this.insertTileAt(
-            this.getNewTile(0),
-            position
-        )
-    }
+    clearTileAt = (position: BoardPosition) =>
+        this.insertTileAt(this.getNewTile(0), position)
 
     mergeTiles = () => {
         this.state.forEach(

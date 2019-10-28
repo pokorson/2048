@@ -12,7 +12,7 @@ describe.only('BoardState', () => {
                     [4, 2, 4, 8],
                 ]
             });
-            expect(board.hasPossibleMoves()).to.be.false;
+            expect(board.hasAnyPossibleMoves()).to.be.false;
         })
 
         it('returns true when board has at least one possible left/right move', function () {
@@ -24,7 +24,7 @@ describe.only('BoardState', () => {
                     [4, 2, 4, 8],
                 ]
             });
-            expect(board.hasPossibleMoves()).to.be.true;
+            expect(board.hasAnyPossibleMoves()).to.be.true;
         })
 
         it('returns true when board has at least one possible up/down move', function () {
@@ -36,7 +36,7 @@ describe.only('BoardState', () => {
                     [4, 2, 4, 8],
                 ]
             });
-            expect(board.hasPossibleMoves()).to.be.true;
+            expect(board.hasAnyPossibleMoves()).to.be.true;
         })
     })
 
@@ -263,5 +263,4 @@ describe.only('BoardState', () => {
             ).to.deep.equal(expectedResult);
         })
     });
-
 })
