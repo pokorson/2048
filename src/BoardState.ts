@@ -76,8 +76,11 @@ class BoardState {
                 let rowString = ""
                 row.forEach(
                     (tile, tileIndex) => {
-                        if (!Array.isArray(tile))
+                        if (Array.isArray(tile)) {
+                            rowString = rowString + " " + `[${tile[0].value}, ${tile[1].value}]`;
+                        } else {
                             rowString = rowString + " " + tile.value;
+                        }
                     }
                 )
                 console.log(rowString + '\n');
@@ -159,11 +162,9 @@ class BoardState {
     }
 
     canMergeTiles = (tile1: Tile | Tile[], tile2: Tile | Tile[]): boolean => {
-        console.log('canMergeTiles inside', tile1, tile2)
         if (Array.isArray(tile1) || Array.isArray(tile2)) return false;
 
         if (tile1.value === 0 || tile2.value === 0) return false;
-        console.log(tile2.value, tile1.value)
         return (tile1.value === tile2.value);
     }
 
@@ -173,12 +174,8 @@ class BoardState {
 
         if (Array.isArray(targetTile) || Array.isArray(tileToMerge)) return;
 
-        this.insertTileAt(
-            this.getNewTile(tileToMerge.value + targetTile.value),
-            targetTilePosition
-        );
+        this.state[targetTilePosition.y][targetTilePosition.x] = [targetTile, tileToMerge];
         this.clearTileAt(tileToMergePosition);
-        console.log(this.mergeAdjacentTiles);
     }
 
     canMoveTile = (startPosition, moveVector: { x: number, y: number }): boolean => {
@@ -209,8 +206,7 @@ class BoardState {
         const tileToMove = this.getTileAt(startPosition);
         const targetTile = this.getTileAt(newPosition);
         if (this.canMergeTiles(tileToMove, targetTile)) {
-            console.log('canMergeTiles')
-            this.mergeAdjacentTiles(startPosition, newPosition);
+            this.mergeAdjacentTiles(newPosition, startPosition);
         } else {
             this.moveTile(startPosition, { x: startPosition.x - 1, y: startPosition.y });
         }
