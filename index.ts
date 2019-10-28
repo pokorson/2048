@@ -8,10 +8,10 @@ board2.insertNewTileAtRandom();
 let gameOver = false;
 
 // renderGameBoard(board, 'game-board');
-BoardView.renderBoard(board2, document.getElementById('game-board'));
+BoardView.renderBoard(board2, document.getElementById('tile-container'));
 
 document.addEventListener('keyup', (event) => {
-    const boardElement = document.getElementById('game-board');
+    const boardElement = document.getElementById('tile-container');
     if (gameOver) return;
     const arrowKeyDirectionMap = {
         'ArrowDown': 'down',

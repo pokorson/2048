@@ -1,9 +1,10 @@
 import BoardState from './BoardState';
 import '../styles/tiles.scss';
 
+const TOP_OFFSET = 5;
+const LEFT_OFFSET = 5;
+
 function insertOrUpdateTileElement(tile, position, targetEl) {
-    const TOP_OFFSET = 5;
-    const LEFT_OFFSET = 5;
     const existingTileElement = document.getElementById(tile.id);
 
     if (existingTileElement) {
@@ -48,8 +49,29 @@ function removeStaleElements(board: BoardState, targetEl) {
     });
 }
 
+function renderTilesPlaceholders(board: BoardState) {
+    const targetEl = document.getElementById('tile-placeholders');
+    targetEl.innerHTML = "";
+
+    board.getState().forEach(
+        (row, rowIndex) => {
+            row.forEach(
+                (tile, tileIndex) => {
+                    let placeholderElement = document.createElement('div');
+                    placeholderElement.style.top = (TOP_OFFSET + rowIndex * 125).toString();
+                    placeholderElement.style.left = (LEFT_OFFSET + tileIndex * 125).toString();
+                    placeholderElement.classList.add('tile-placeholder');
+                    targetEl.appendChild(placeholderElement);
+                }
+            )
+        }
+    );
+}
+
 const BoardView = {
     renderBoard: (board: BoardState, targetEl) => {
+        renderTilesPlaceholders(board, targetEl);
+
         board.getState().forEach(
             (row, rowIndex) => {
                 row.forEach(
@@ -58,10 +80,11 @@ const BoardView = {
                             insertOrUpdateTileElement(tile[0], { x: tileIndex, y: rowIndex }, targetEl);
                             insertOrUpdateTileElement(tile[1], { x: tileIndex, y: rowIndex }, targetEl);
                             return;
+                        } else if (tile.value === 0) {
+                            return;
+                        } else {
+                            insertOrUpdateTileElement(tile, { x: tileIndex, y: rowIndex }, targetEl);
                         }
-                        if (tile.value === 0) return;
-
-                        insertOrUpdateTileElement(tile, { x: tileIndex, y: rowIndex }, targetEl);
                     }
                 )
             }

@@ -1,13 +1,22 @@
 // colors copied from original 2048 game https://play2048.co/
 
 $radius: 5px;
-$tile-size: 80px;
+$tile-size: 100px;
+
+.tile-placeholder {
+  width: $tile-size;
+  height: $tile-size;
+  border-radius: $radius;
+  background: rgba(238, 228, 218, 0.35);
+  position: absolute;
+}
 
 .tile {
   width: $tile-size;
   height: $tile-size;
-  padding: 15px;
+  box-sizing: border-box;
   border-radius: $radius;
+  padding: 15px;
   position: absolute;
   font-size: 60px;
   text-align: center;
