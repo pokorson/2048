@@ -40,6 +40,36 @@ class BoardState {
         })
     }
 
+    serialize = () => (
+        this.state.map(row => (
+            row.map(tile => {
+                if (Array.isArray(tile)) {
+                    return [tile[0].value, tile[1].value];
+                }
+                return tile.value;
+            })
+        ))
+    )
+
+    hasPossibleMoves = (): boolean => {
+        let anyPossibleMove = false;
+        this.state.forEach((row, rowIndex) => {
+            row.forEach((tile, tileIndex) => {
+                const position = { x: tileIndex, y: rowIndex };
+                if (
+                    this.canMoveTile(position, { x: 1, y: 0 }) ||
+                    this.canMoveTile(position, { x: -1, y: 0 }) ||
+                    this.canMoveTile(position, { x: 0, y: 1 }) ||
+                    this.canMoveTile(position, { x: 0, y: -1 })
+                ) {
+                    anyPossibleMove = true
+                }
+
+            })
+        })
+        return anyPossibleMove;
+    }
+
     print = () => {
         this.state.forEach(
             (row, rowIndex) => {
@@ -128,12 +158,27 @@ class BoardState {
         return (tileAtPosition.value !== 0);
     }
 
-    canMergeTiles = (tile1: Tile, tile2: Tile): boolean => {
+    canMergeTiles = (tile1: Tile | Tile[], tile2: Tile | Tile[]): boolean => {
+        console.log('canMergeTiles inside', tile1, tile2)
         if (Array.isArray(tile1) || Array.isArray(tile2)) return false;
 
-        if (tile1.value !== 0 || tile2.value === 0) return false;
-
+        if (tile1.value === 0 || tile2.value === 0) return false;
+        console.log(tile2.value, tile1.value)
         return (tile1.value === tile2.value);
+    }
+
+    mergeAdjacentTiles = (targetTilePosition: BoardPosition, tileToMergePosition: BoardPosition) => {
+        const tileToMerge = this.getTileAt(tileToMergePosition);
+        const targetTile = this.getTileAt(targetTilePosition);
+
+        if (Array.isArray(targetTile) || Array.isArray(tileToMerge)) return;
+
+        this.insertTileAt(
+            this.getNewTile(tileToMerge.value + targetTile.value),
+            targetTilePosition
+        );
+        this.clearTileAt(tileToMergePosition);
+        console.log(this.mergeAdjacentTiles);
     }
 
     canMoveTile = (startPosition, moveVector: { x: number, y: number }): boolean => {
@@ -158,71 +203,31 @@ class BoardState {
 
     }
 
-    canMoveTileLeft = (startPosition: BoardPosition): boolean => {
-        if (startPosition.x - 1 < 0) return false;
-
-        if (this.isPositionOccupied({
-            x: startPosition.x - 1,
-            y: startPosition.y
-        })) {
-            return false;
-        }
-        return true;
-    }
-
     moveTileLeft = (startPosition: BoardPosition) => {
-        if (!this.canMoveTileLeft(startPosition)) return;
-        this.moveTile(startPosition, { x: startPosition.x - 1, y: startPosition.y });
-    }
-
-    canMoveTileRight = (startPosition: BoardPosition): boolean => {
-        if (startPosition.x >= this.state[startPosition.y].length) return false;
-
-        if (this.isPositionOccupied({
-            x: startPosition.x + 1,
-            y: startPosition.y
-        })) {
-            return false;
+        if (!this.canMoveTile(startPosition, { x: -1, y: 0 })) return;
+        const newPosition = { x: startPosition.x - 1, y: startPosition.y };
+        const tileToMove = this.getTileAt(startPosition);
+        const targetTile = this.getTileAt(newPosition);
+        if (this.canMergeTiles(tileToMove, targetTile)) {
+            console.log('canMergeTiles')
+            this.mergeAdjacentTiles(startPosition, newPosition);
+        } else {
+            this.moveTile(startPosition, { x: startPosition.x - 1, y: startPosition.y });
         }
-        return true;
     }
 
     moveTileRight = (startPosition: BoardPosition) => {
-        if (!this.canMoveTileRight(startPosition)) return;
+        if (!this.canMoveTile(startPosition, { x: 1, y: 0 })) return;
         this.moveTile(startPosition, { ...startPosition, x: startPosition.x + 1 });
     }
 
-    canMoveTileUp = (startPosition: BoardPosition): boolean => {
-        if (startPosition.y === 0) return false;
-
-        if (this.isPositionOccupied({
-            x: startPosition.x,
-            y: startPosition.y - 1
-        })) {
-            return false;
-        }
-        return true;
-    }
-
     moveTileUp = (startPosition: BoardPosition) => {
-        if (!this.canMoveTileUp(startPosition)) return;
+        if (!this.canMoveTile(startPosition, { x: 0, y: -1 })) return;
         this.moveTile(startPosition, { x: startPosition.x, y: startPosition.y - 1 });
     }
 
-    canMoveTileDown = (startPosition: BoardPosition): boolean => {
-        if (startPosition.y + 1 >= this.state[startPosition.y].length) return false;
-
-        if (this.isPositionOccupied({
-            x: startPosition.x,
-            y: startPosition.y + 1
-        })) {
-            return false;
-        }
-        return true;
-    }
-
     moveTileDown = (startPosition: BoardPosition) => {
-        if (!this.canMoveTileDown(startPosition)) return;
+        if (!this.canMoveTile(startPosition, { x: 0, y: 1 })) return;
         this.moveTile(startPosition, { x: startPosition.x, y: startPosition.y + 1 })
     }
 
@@ -236,7 +241,7 @@ class BoardState {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTileLeft(position)) {
+                        while (this.canMoveTile(position, { x: -1, y: 0 })) {
                             this.moveTileLeft(position);
                             position = { x: position.x - 1, y: rowIndex };
                         }
@@ -251,7 +256,7 @@ class BoardState {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTileUp(position)) {
+                        while (this.canMoveTile(position, { x: 0, y: -1 })) {
                             this.moveTileUp(position);
                             position = { x: tileIndex, y: position.y - 1 };
                         }
@@ -266,7 +271,7 @@ class BoardState {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTileRight(position)) {
+                        while (this.canMoveTile(position, { x: 1, y: 0 })) {
                             this.moveTileRight(position);
                             position = { x: position.x + 1, y: rowIndex };
                         }
@@ -281,7 +286,7 @@ class BoardState {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTileDown(position)) {
+                        while (this.canMoveTile(position, { x: 0, y: 1 })) {
                             this.moveTileDown(position);
                             position = { x: tileIndex, y: position.y + 1 };
                         }
