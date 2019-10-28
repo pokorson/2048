@@ -214,12 +214,10 @@ class BoardState {
         this.clearTileAt(startPosition);
     }
 
-    getTranslatedPosition = (position: BoardPosition, translationVector: { x: number, y: number }): { x: number, y: number } => {
-        return {
-            x: position.x + translationVector.x,
-            y: position.y + translationVector.y
-        }
-    }
+    getTranslatedPosition = (position: BoardPosition, translationVector: MoveVector): MoveVector => ({
+        x: position.x + translationVector.x,
+        y: position.y + translationVector.y
+    })
 
     moveOrMergeTile = (startPosition: BoardPosition, vector: MoveVector) => {
         if (!this.canMoveTile(startPosition, vector)) return;
@@ -235,69 +233,61 @@ class BoardState {
         }
     }
 
+    moveSingleTile = (position: BoardPosition, moveVector: MoveVector) => {
+        const tile = this.getTileAt(position);
+
+        if ((!Array.isArray(tile)) && tile.value === 0) return;
+
+        if (!this.canMoveTile(position, moveVector)) return;
+
+        this.moveOrMergeTile(position, moveVector);
+
+        const nextPosition = this.getTranslatedPosition(position, moveVector)
+        this.moveSingleTile(
+            nextPosition,
+            moveVector
+        );
+    }
+
     moveAllTiles = (direction: BoardMoveDirection) => {
         switch (direction) {
             case 'left':
                 for (let rowIndex = 0; rowIndex < this.state.length; rowIndex++) {
                     for (let tileIndex = 0; tileIndex < this.state[rowIndex].length; tileIndex++) {
-                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
-                        if ((!Array.isArray(tile)) && tile.value === 0) {
-                            continue;
-                        }
+                        const position = { x: tileIndex, y: rowIndex };
                         const moveVector = { x: -1, y: 0 };
-                        let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTile(position, moveVector)) {
-                            this.moveOrMergeTile(position, moveVector);
-                            position = this.getTranslatedPosition(position, moveVector);
-                        }
+
+                        this.moveSingleTile(position, moveVector);
                     }
                 }
                 return;
             case 'up':
                 for (let rowIndex = 0; rowIndex < this.state.length; rowIndex++) {
                     for (let tileIndex = 0; tileIndex < this.state[rowIndex].length; tileIndex++) {
-                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
-                        if ((!Array.isArray(tile)) && tile.value === 0) {
-                            continue;
-                        }
                         const moveVector = { x: 0, y: -1 };
-                        let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTile(position, moveVector)) {
-                            this.moveOrMergeTile(position, moveVector);
-                            position = this.getTranslatedPosition(position, moveVector);
-                        }
+                        const position = { x: tileIndex, y: rowIndex };
+
+                        this.moveSingleTile(position, moveVector);
                     }
                 }
                 return;
             case 'right':
                 for (let rowIndex = 0; rowIndex < this.state.length; rowIndex++) {
                     for (let tileIndex = this.state[rowIndex].length - 1; tileIndex >= 0; tileIndex--) {
-                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
-                        if ((!Array.isArray(tile)) && tile.value === 0) {
-                            continue;
-                        }
                         const moveVector = { x: 1, y: 0 };
-                        let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTile(position, moveVector)) {
-                            this.moveOrMergeTile(position, moveVector);
-                            position = this.getTranslatedPosition(position, moveVector);
-                        }
+                        const position = { x: tileIndex, y: rowIndex };
+
+                        this.moveSingleTile(position, moveVector);
                     }
                 }
                 return;
             case 'down':
                 for (let rowIndex = this.state.length - 1; rowIndex >= 0; rowIndex--) {
                     for (let tileIndex = 0; tileIndex < this.state[rowIndex].length; tileIndex++) {
-                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
-                        if ((!Array.isArray(tile)) && tile.value === 0) {
-                            continue;
-                        }
                         const moveVector = { x: 0, y: 1 };
-                        let position = { x: tileIndex, y: rowIndex };
-                        while (this.canMoveTile(position, { x: 0, y: 1 })) {
-                            this.moveOrMergeTile(position, moveVector);
-                            position = this.getTranslatedPosition(position, moveVector);
-                        }
+                        const position = { x: tileIndex, y: rowIndex };
+
+                        this.moveSingleTile(position, moveVector);
                     }
                 }
                 return;
