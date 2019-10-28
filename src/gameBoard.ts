@@ -2,10 +2,12 @@ import { generateId } from './helpers';
 
 interface Tile {
     value: number;
+    id: string;
 }
 
 type EmptyTile = {
-    value: 0
+    value: 0;
+    id: string;
 }
 
 type BoardRow = Array<Tile | EmptyTile>;
@@ -14,8 +16,12 @@ interface GameBoard {
     boardState: BoardRow[];
 }
 
-export function createTile(value: number) {
+export function createTile(value: number): Tile {
     return { value, id: generateId() };
+}
+
+export function updateTileValue(tile: Tile, newValue: number): Tile {
+    return { ...tile, value: newValue };
 }
 
 function getTileValue(tile: Tile): number {
@@ -47,6 +53,23 @@ export function initBoard(): GameBoard {
 
 export function getTileAt(board: GameBoard, x: number, y: number): Tile {
     return board.boardState[y][x];
+}
+
+export function insertTileAt(board: GameBoard, newTile: Tile, x: number, y: number): GameBoard {
+    return {
+        ...board,
+        boardState: board.boardState.map(
+            (row, rowIndex) => {
+                return row.map((tile, tileIndex) => {
+                    if (tileIndex === x && rowIndex === y) {
+                        return newTile;
+                    } else {
+                        return tile;
+                    }
+                })
+            }
+        )
+    }
 }
 
 export function areBoardsEqual(board1: GameBoard, board2: GameBoard): boolean {
@@ -245,32 +268,39 @@ export function addNewTile(board: GameBoard) {
     return createBoard(boardState);
 }
 
-function createTileElement(tile: Tile, { position }) {
-    if (isEmptyTile(tile)) return;
-
+function createOrFindTileElement(tile: Tile, { position }) {
     const TOP_OFFSET = 5;
     const LEFT_OFFSET = 5;
-    const tileElement = document.createElement('div');
 
-    tileElement.innerText = getTileValue(tile).toString();
-    tileElement.classList.add('tile');
-    tileElement.style.transform = `translate(${(LEFT_OFFSET + position.x * 125)}px, ${TOP_OFFSET + position.y * 125}px)`;
-    return tileElement;
+    const existingTileElement = document.getElementById(tile.id);
+
+    if (existingTileElement) {
+        existingTileElement.style.transform = `translate(${(LEFT_OFFSET + position.x * 125)}px, ${TOP_OFFSET + position.y * 125}px)`;
+        return existingTileElement;
+    } else {
+        const tileElement = document.createElement('div');
+
+        tileElement.id = tile.id;
+        tileElement.innerText = getTileValue(tile).toString();
+        tileElement.classList.add('tile');
+        tileElement.style.transform = `translate(${(LEFT_OFFSET + position.x * 125)}px, ${TOP_OFFSET + position.y * 125}px)`;
+        return tileElement;
+    }
 }
 
 export function renderGameBoard(board: GameBoard, elementSelector: string) {
     const element = document.getElementById(elementSelector);
-    const result = document.createElement('div');
-    element.innerHTML = "";
+    // element.innerHTML = "";
 
     board.boardState.forEach((row, rowIndex) => {
         row.forEach((tile, tileIndex) => {
             if (!isEmptyTile(tile)) {
-                const tileElement = createTileElement(tile, { position: { x: tileIndex, y: rowIndex } });
-                result.appendChild(tileElement);
+                const tileElement = createOrFindTileElement(tile, { position: { x: tileIndex, y: rowIndex } });
+                if (tileElement) {
+                    element.appendChild(tileElement);
+                }
             }
         })
     })
-
-    element.appendChild(result);
+    4
 }
