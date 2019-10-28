@@ -1,4 +1,5 @@
 import BoardState from './BoardState';
+import '../styles/tiles.scss';
 
 function insertOrUpdateTileElement(tile, position, targetEl) {
     const TOP_OFFSET = 5;
@@ -10,10 +11,16 @@ function insertOrUpdateTileElement(tile, position, targetEl) {
         return existingTileElement;
     } else {
         const tileElement = document.createElement('div');
+        const tileValue = tile.value;
 
         tileElement.id = tile.id;
-        tileElement.innerText = tile.value.toString();
+        tileElement.innerText = tileValue.toString();
         tileElement.classList.add('tile');
+        if (tileValue > 2048) {
+            tileElement.classList.add('tile-super');
+        } else {
+            tileElement.classList.add(`tile-${tileValue}`);
+        }
         tileElement.style.transform = `translate(${(LEFT_OFFSET + position.x * 125)}px, ${TOP_OFFSET + position.y * 125}px)`;
         targetEl.appendChild(tileElement);
     }
@@ -59,9 +66,7 @@ const BoardView = {
                 )
             }
         );
-        setTimeout(() => {
-            removeStaleElements(board, targetEl);
-        }, 200);
+        setTimeout(() => removeStaleElements(board, targetEl), 200);
 
     }
 }
