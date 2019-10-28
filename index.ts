@@ -1,8 +1,6 @@
-import { renderGameBoard, createBoard, moveTiles, addNewTile, boardHasPossibleMoves } from './src/gameBoard';
+import { renderGameBoard, createBoard, moveTiles, addNewTile, boardHasPossibleMoves, initBoard } from './src/gameBoard';
 
-let board = createBoard();
-board = addNewTile(board);
-board = addNewTile(board);
+let board = initBoard();
 
 let gameOver = false;
 
@@ -29,3 +27,8 @@ document.addEventListener('keyup', (event) => {
         alert('game over!');
     }
 })
+
+document.getElementById('start-new-game').addEventListener('click', () => {
+    board = initBoard();
+    renderGameBoard(board, 'game-board');
+});

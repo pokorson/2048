@@ -36,6 +36,13 @@ export function createBoard(board?: number[][]): GameBoard {
     };
 }
 
+export function initBoard(): GameBoard {
+    let board = createBoard();
+    board = addNewTile(board);
+    board = addNewTile(board);
+    return board;
+}
+
 function serializeBoard(board: GameBoard): number[][] {
     let serializedBoard = [[], [], [], []];
     board.boardState.forEach((row, rowIndex) => {
