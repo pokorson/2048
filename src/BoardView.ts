@@ -70,7 +70,7 @@ function renderTilesPlaceholders(board: BoardState) {
 
 const BoardView = {
     renderBoard: (board: BoardState, targetEl) => {
-        renderTilesPlaceholders(board, targetEl);
+        renderTilesPlaceholders(board);
 
         board.getState().forEach(
             (row, rowIndex) => {
