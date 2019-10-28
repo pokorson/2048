@@ -22,8 +22,8 @@ interface BoardPosition {
 class BoardState {
     state: TileRow[];
 
-    constructor(initBoard?: number[][]) {
-        let boardShape = initBoard;
+    constructor(initialValues?: number[][]) {
+        let boardShape = initialValues;
 
         if (!boardShape) {
             boardShape = [

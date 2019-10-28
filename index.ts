@@ -1,14 +1,13 @@
 import BoardState from './src/BoardState';
 import BoardView from './src/BoardView';
 
-const board2 = new BoardState();
-board2.insertNewTileAtRandom();
-board2.insertNewTileAtRandom();
+let board = new BoardState();
+board.insertNewTileAtRandom();
+board.insertNewTileAtRandom();
 
 let gameOver = false;
 
-// renderGameBoard(board, 'game-board');
-BoardView.renderBoard(board2, document.getElementById('tile-container'));
+BoardView.renderBoard(board, document.getElementById('tile-container'));
 
 document.addEventListener('keyup', (event) => {
     const boardElement = document.getElementById('tile-container');
@@ -25,19 +24,27 @@ document.addEventListener('keyup', (event) => {
     console.log("MOVING: " + direction);
 
     console.log('Initial state:');
-    board2.print();
+    board.print();
 
-    board2.moveAllTiles(direction);
-    BoardView.renderBoard(board2, boardElement);
+    board.moveAllTiles(direction);
+    BoardView.renderBoard(board, boardElement);
 
-    board2.mergeTiles();
-    BoardView.renderBoard(board2, boardElement);
+    board.mergeTiles();
+    BoardView.renderBoard(board, boardElement);
 
-    board2.insertNewTileAtRandom();
-    BoardView.renderBoard(board2, boardElement);
+    board.insertNewTileAtRandom();
+    BoardView.renderBoard(board, boardElement);
 
     console.log('Final state:');
-    board2.print();
+    board.print();
+})
 
-
+document.getElementById('start-new-game').addEventListener('click', () => {
+    const boardElement = document.getElementById('tile-container');
+    gameOver = false;
+    board = new BoardState();
+    board.insertNewTileAtRandom();
+    board.insertNewTileAtRandom();
+    boardElement.innerHTML = "";
+    BoardView.renderBoard(board, boardElement);
 })
