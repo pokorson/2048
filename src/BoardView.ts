@@ -19,6 +19,28 @@ function insertOrUpdateTileElement(tile, position, targetEl) {
     }
 }
 
+function removeStaleElements(board: BoardState, targetEl) {
+    let elementsIds = [];
+    targetEl.childNodes.forEach(node => elementsIds.push(node.id))
+    let tilesIds = [];
+    board.getState().forEach(row => {
+        row.forEach(tile => {
+            if (!Array.isArray(tile) && tile.value !== 0) {
+
+                tilesIds.push(tile.id);
+            }
+        })
+    });
+    elementsIds.forEach(id => {
+        if (!tilesIds.includes(id)) {
+
+            let tileElement = document.getElementById(id);
+            targetEl.removeChild(tileElement);
+
+        }
+    });
+}
+
 const BoardView = {
     renderBoard: (board: BoardState, targetEl) => {
         board.getState().forEach(
@@ -37,6 +59,10 @@ const BoardView = {
                 )
             }
         );
+        setTimeout(() => {
+            removeStaleElements(board, targetEl);
+        }, 200);
+
     }
 }
 

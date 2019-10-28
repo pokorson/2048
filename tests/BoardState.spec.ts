@@ -116,6 +116,37 @@ describe.only('BoardState', () => {
             ).to.deep.equal(expectedBoardState);
         })
 
+        it('does not move when there is no available space', () => {
+            const board = new BoardState([
+                [2, 4, 8, 2],
+                [4, 8, 2, 8],
+                [2, 4, 8, 4],
+                [4, 2, 4, 8],
+            ]);
+            const expectedBoardState = ([
+                [2, 4, 8, 2],
+                [4, 8, 2, 8],
+                [2, 4, 8, 4],
+                [4, 2, 4, 8],
+            ]);
+            board.moveAllTiles('left');
+            expect(
+                board.serialize(),
+            ).to.deep.equal(expectedBoardState);
+            board.moveAllTiles('right');
+            expect(
+                board.serialize(),
+            ).to.deep.equal(expectedBoardState);
+            board.moveAllTiles('up');
+            expect(
+                board.serialize(),
+            ).to.deep.equal(expectedBoardState);
+            board.moveAllTiles('down');
+            expect(
+                board.serialize(),
+            ).to.deep.equal(expectedBoardState);
+        })
+
         it('merges adjacent tiles when they have the same value', function () {
             const board = new BoardState([
                 [2, 2, 0, 0],
@@ -139,14 +170,14 @@ describe.only('BoardState', () => {
             const board = new BoardState([
                 [0, 2, 2, 0],
                 [4, 2, 4, 8],
-                [4, 8, 2, 4],
-                [4, 2, 4, 8],
+                [4, 8, 8, 4],
+                [4, 2, 4, 4],
             ]);
             const expectedResult = ([
                 [[2, 2], 0, 0, 0],
                 [4, 2, 4, 8],
-                [4, 8, 2, 4],
-                [4, 2, 4, 8],
+                [4, [8, 8], 4, 0],
+                [4, 2, [4, 4], 0],
             ]);
             board.moveAllTiles('left')
             expect(
