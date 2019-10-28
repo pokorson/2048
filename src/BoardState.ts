@@ -19,11 +19,18 @@ interface BoardPosition {
     y: number;
 }
 
+interface BoardStateConstructorArgs {
+    initialValues?: number[][];
+    onScore: (score: number) => void;
+}
+
 class BoardState {
     state: TileRow[];
+    onScore = (score) => { };
 
-    constructor(initialValues?: number[][]) {
+    constructor({ initialValues, onScore }: BoardStateConstructorArgs) {
         let boardShape = initialValues;
+        this.onScore = onScore;
 
         if (!boardShape) {
             boardShape = [
@@ -141,10 +148,13 @@ class BoardState {
                 row.forEach(
                     (tile, tileIndex) => {
                         if (Array.isArray(tile)) {
+                            const newValue = tile[0].value + tile[1].value;
                             this.insertTileAt(
-                                this.getNewTile(tile[0].value + tile[1].value),
+                                this.getNewTile(newValue),
                                 { x: tileIndex, y: rowIndex }
                             );
+
+                            this.onScore(newValue);
                         }
                     }
                 )

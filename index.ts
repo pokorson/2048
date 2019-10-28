@@ -1,7 +1,17 @@
 import BoardState from './src/BoardState';
 import BoardView from './src/BoardView';
 
-let board = new BoardState();
+let currentScore = 0;
+
+function handleScoreUpdate(score) {
+    const scoreElement = document.getElementById('current-score');
+    currentScore = currentScore + score;
+    scoreElement.innerText = `Score: ${currentScore}`
+}
+
+let board = new BoardState({
+    onScore: handleScoreUpdate
+});
 board.insertNewTileAtRandom();
 board.insertNewTileAtRandom();
 
@@ -42,9 +52,12 @@ document.addEventListener('keyup', (event) => {
 document.getElementById('start-new-game').addEventListener('click', () => {
     const boardElement = document.getElementById('tile-container');
     gameOver = false;
-    board = new BoardState();
+    board = new BoardState({ onScore: handleScoreUpdate });
     board.insertNewTileAtRandom();
     board.insertNewTileAtRandom();
     boardElement.innerHTML = "";
+    currentScore = 0;
+    const scoreElement = document.getElementById('current-score');
+    scoreElement.innerText = `Score: ${currentScore}`
     BoardView.renderBoard(board, boardElement);
 })
