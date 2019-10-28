@@ -8,10 +8,10 @@ $radius: 5px;
 
 #game-board {
   position: relative;
-  background-color: $board-background;
-  width: 500px;
-  height: 500px;
-  border: $radius solid $board-background;
+  background: #bbada0;
+  width: 490px;
+  height: 490px;
+  border: $radius solid #bbada0;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
