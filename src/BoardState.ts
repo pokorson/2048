@@ -11,7 +11,7 @@ type EmptyTile = {
     id: string;
 }
 
-type TileRow = Array<Tile | EmptyTile>;
+type TileRow = Array<Tile | EmptyTile | Tile[]>;
 
 type BoardMoveDirection = 'left' | 'right' | 'up' | 'down';
 
@@ -46,7 +46,8 @@ class BoardState {
                 let rowString = ""
                 row.forEach(
                     (tile, tileIndex) => {
-                        rowString = rowString + " " + tile.value;
+                        if (!Array.isArray(tile))
+                            rowString = rowString + " " + tile.value;
                     }
                 )
                 console.log(rowString + '\n');
@@ -60,14 +61,14 @@ class BoardState {
     }
 
     getNewTile = (value: number): Tile => ({ value, id: generateId() });
-    getTileAt = (position: BoardPosition): Tile => {
+    getTileAt = (position: BoardPosition): Tile | Tile[] => {
         return this.state[position.y][position.x];
     }
     insertNewTileAtRandom = () => {
         let emptyTilesPositions: BoardPosition[] = [];
         this.state.forEach((row, rowIndex) => {
             row.forEach((tile, tileIndex) => {
-                if (tile.value === 0) {
+                if (!Array.isArray(tile) && tile.value === 0) {
                     emptyTilesPositions.push({ x: tileIndex, y: rowIndex });
                 }
             });
@@ -95,12 +96,35 @@ class BoardState {
     }
     moveTile = (startPosition, endPosition) => {
         const tileToMove = this.getTileAt(startPosition);
+
+        if (Array.isArray(tileToMove)) return;
+
         this.insertTileAt(tileToMove, endPosition);
+        this.clearTileAt(startPosition);
+    }
+
+    mergeTiles = () => {
+        this.state.forEach(
+            (row, rowIndex) => {
+                row.forEach(
+                    (tile, tileIndex) => {
+                        if (Array.isArray(tile)) {
+                            this.insertTileAt(
+                                createTile(tile[0].value + tile[1].value),
+                                { x: tileIndex, y: rowIndex }
+                            );
+                        }
+                    }
+                )
+            }
+        )
     }
 
     isPositionOccupied = (position: BoardPosition): boolean => {
         const tileAtPosition = this.getTileAt(position);
         if (!tileAtPosition) return true;
+        if (Array.isArray(tileAtPosition)) return;
+
         return (tileAtPosition.value !== 0);
     }
 
@@ -118,10 +142,7 @@ class BoardState {
 
     moveTileLeft = (startPosition: BoardPosition) => {
         if (!this.canMoveTileLeft(startPosition)) return;
-
-        const tileToMove = this.getTileAt(startPosition);
-        this.state[startPosition.y][startPosition.x - 1] = tileToMove;
-        this.clearTileAt(startPosition);
+        this.moveTile(startPosition, { x: startPosition.x - 1, y: startPosition.y });
     }
 
     canMoveTileRight = (startPosition: BoardPosition): boolean => {
@@ -138,10 +159,7 @@ class BoardState {
 
     moveTileRight = (startPosition: BoardPosition) => {
         if (!this.canMoveTileRight(startPosition)) return;
-
-        const tileToMove = this.getTileAt(startPosition);
-        this.insertTileAt(tileToMove, { ...startPosition, x: startPosition.x + 1 });
-        this.clearTileAt(startPosition);
+        this.moveTile(startPosition, { ...startPosition, x: startPosition.x + 1 });
     }
 
     canMoveTileUp = (startPosition: BoardPosition): boolean => {
@@ -158,10 +176,7 @@ class BoardState {
 
     moveTileUp = (startPosition: BoardPosition) => {
         if (!this.canMoveTileUp(startPosition)) return;
-
-        const tileToMove = this.getTileAt(startPosition);
-        this.state[startPosition.y - 1][startPosition.x] = tileToMove;
-        this.clearTileAt(startPosition);
+        this.moveTile(startPosition, { x: startPosition.x, y: startPosition.y - 1 });
     }
 
     canMoveTileDown = (startPosition: BoardPosition): boolean => {
@@ -178,10 +193,7 @@ class BoardState {
 
     moveTileDown = (startPosition: BoardPosition) => {
         if (!this.canMoveTileDown(startPosition)) return;
-
-        const tileToMove = this.getTileAt(startPosition);
-        this.state[startPosition.y + 1][startPosition.x] = tileToMove;
-        this.clearTileAt(startPosition);
+        this.moveTile(startPosition, { x: startPosition.x, y: startPosition.y + 1 })
     }
 
     moveAllTiles = (direction: BoardMoveDirection) => {
@@ -189,7 +201,8 @@ class BoardState {
             case 'left':
                 for (let rowIndex = 0; rowIndex < this.state.length; rowIndex++) {
                     for (let tileIndex = 0; tileIndex < this.state[rowIndex].length; tileIndex++) {
-                        if (this.getTileAt({ x: tileIndex, y: rowIndex }).value === 0) {
+                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
+                        if ((!Array.isArray(tile)) && tile.value === 0) {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
@@ -203,7 +216,8 @@ class BoardState {
             case 'up':
                 for (let rowIndex = 0; rowIndex < this.state.length; rowIndex++) {
                     for (let tileIndex = 0; tileIndex < this.state[rowIndex].length; tileIndex++) {
-                        if (this.getTileAt({ x: tileIndex, y: rowIndex }).value === 0) {
+                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
+                        if ((!Array.isArray(tile)) && tile.value === 0) {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
@@ -217,7 +231,8 @@ class BoardState {
             case 'right':
                 for (let rowIndex = 0; rowIndex < this.state.length; rowIndex++) {
                     for (let tileIndex = this.state[rowIndex].length - 1; tileIndex >= 0; tileIndex--) {
-                        if (this.getTileAt({ x: tileIndex, y: rowIndex }).value === 0) {
+                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
+                        if ((!Array.isArray(tile)) && tile.value === 0) {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
@@ -231,7 +246,8 @@ class BoardState {
             case 'down':
                 for (let rowIndex = this.state.length - 1; rowIndex >= 0; rowIndex--) {
                     for (let tileIndex = 0; tileIndex < this.state[rowIndex].length; tileIndex++) {
-                        if (this.getTileAt({ x: tileIndex, y: rowIndex }).value === 0) {
+                        const tile = this.getTileAt({ x: tileIndex, y: rowIndex });
+                        if ((!Array.isArray(tile)) && tile.value === 0) {
                             continue;
                         }
                         let position = { x: tileIndex, y: rowIndex };
@@ -244,7 +260,6 @@ class BoardState {
                 return;
         }
     }
-
 }
 
 export default BoardState;
