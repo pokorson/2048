@@ -1,4 +1,4 @@
-import { renderGameBoard, createBoard, moveTiles, addNewTile } from './src/gameBoard';
+import { renderGameBoard, createBoard, moveTiles, addNewTile, boardHasPossibleMoves } from './src/gameBoard';
 
 let board = createBoard([
     [4, 4, 8, 2],
@@ -7,9 +7,12 @@ let board = createBoard([
     [4, 2, 4, 8],
 ]);
 
+let gameOver = false;
+
 renderGameBoard(board, 'game-board');
 
 document.addEventListener('keyup', (event) => {
+    if (gameOver) return;
     const arrowKeyDirectionMap = {
         'ArrowDown': 'down',
         'ArrowUp': 'up',
@@ -23,4 +26,9 @@ document.addEventListener('keyup', (event) => {
     board = addNewTile(board);
 
     renderGameBoard(board, 'game-board');
+
+    if (!boardHasPossibleMoves(board)) {
+        gameOver = true;
+        alert('game over!');
+    }
 })
