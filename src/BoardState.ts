@@ -128,6 +128,36 @@ class BoardState {
         return (tileAtPosition.value !== 0);
     }
 
+    canMergeTiles = (tile1: Tile, tile2: Tile): boolean => {
+        if (Array.isArray(tile1) || Array.isArray(tile2)) return false;
+
+        if (tile1.value !== 0 || tile2.value === 0) return false;
+
+        return (tile1.value === tile2.value);
+    }
+
+    canMoveTile = (startPosition, moveVector: { x: number, y: number }): boolean => {
+        const newPosition = { x: startPosition.x + moveVector.x, y: startPosition.y + moveVector.y };
+        const isPositionInRange = (
+            newPosition.y < this.state.length &&
+            newPosition.y >= 0 &&
+            newPosition.x < this.state[newPosition.y].length &&
+            newPosition.x >= 0
+        );
+
+        if (!isPositionInRange) return false;
+
+        const tileToMove = this.getTileAt(startPosition);
+        const targetTile = this.getTileAt(newPosition);
+
+        if (Array.isArray(targetTile) || Array.isArray(tileToMove)) return false;
+
+        if (targetTile.value !== 0 && targetTile.value !== tileToMove.value) return false;
+
+        return true;
+
+    }
+
     canMoveTileLeft = (startPosition: BoardPosition): boolean => {
         if (startPosition.x - 1 < 0) return false;
 
