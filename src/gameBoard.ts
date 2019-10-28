@@ -225,11 +225,13 @@ export function addNewTile(board: GameBoard) {
 }
 
 function createTileElement(tile: Tile, { position }) {
+    if (isEmptyTile(tile)) return;
+
     const TOP_OFFSET = 5;
     const LEFT_OFFSET = 5;
     const tileElement = document.createElement('div');
 
-    tileElement.innerText = tile.value === 0 ? '' : tile.value.toString();
+    tileElement.innerText = tile.value.toString();
     tileElement.classList.add('tile');
     tileElement.style.transform = `translate(${(LEFT_OFFSET + position.x * 125)}px, ${TOP_OFFSET + position.y * 125}px)`;
     return tileElement;
@@ -242,8 +244,10 @@ export function renderGameBoard(board: GameBoard, elementSelector: string) {
 
     board.boardState.forEach((row, rowIndex) => {
         row.forEach((tile, tileIndex) => {
-            const tileElement = createTileElement(tile, { position: { x: tileIndex, y: rowIndex } });
-            result.appendChild(tileElement);
+            if (!isEmptyTile(tile)) {
+                const tileElement = createTileElement(tile, { position: { x: tileIndex, y: rowIndex } });
+                result.appendChild(tileElement);
+            }
         })
     })
 
