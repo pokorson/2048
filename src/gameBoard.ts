@@ -12,7 +12,7 @@ interface GameBoard {
     boardState: BoardRow[];
 }
 
-export function createTile(value) {
+export function createTile(value: number) {
     return { value };
 }
 
@@ -196,6 +196,25 @@ export function moveTiles(board: GameBoard, direction: MoveDirection): GameBoard
     // console.log(serializeBoard(getRotatedBoard(createBoard(mergedBoard), reverseTransposition[direction])), serializeBoard(board));
 
     return getRotatedBoard(createBoard(mergedBoard), reverseTransposition[direction]);
+}
+
+export function addNewTile(board: GameBoard) {
+    const boardState = serializeBoard(board);
+    let emptyTilesPositions = [];
+    boardState.forEach((row, rowIndex) => {
+        row.forEach((tile, tileIndex) => {
+            if (tile === 0) {
+                emptyTilesPositions.push({ x: tileIndex, y: rowIndex });
+            }
+        });
+    });
+
+    if (emptyTilesPositions.length > 0) {
+        let { x, y } = emptyTilesPositions[Math.floor(Math.random() * emptyTilesPositions.length)];
+        boardState[y][x] = 2;
+    }
+
+    return createBoard(boardState);
 }
 
 function createTileElement(tile: Tile, { position }) {
