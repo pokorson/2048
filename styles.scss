@@ -4,16 +4,41 @@ body {
   background-color: $app-background;
 }
 
-$radius: 5px;
+$game-board-radius: 5px;
+
+#root {
+  display: flex;
+  justify-content: space-around;
+}
 
 #game-board {
   position: relative;
-  background: #bbada0;
+  background: $board-background;
   width: 490px;
   height: 490px;
-  border: $radius solid #bbada0;
+  border: $game-board-radius solid $board-background;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
+}
+
+#start-new-game {
+  border-radius: $game-board-radius;
+  color: #fff;
+  border: none;
+  width: 100%;
+  padding: 5px 15px;
+  font-size: 16px;
+  background: #8f7a66;
+}
+
+#current-score {
+  margin-bottom: 20px;
+  border: 1px solid $board-background;
+  background: $board-background;
+  border-radius: $game-board-radius;
+  color: #fff;
+  padding: 10px 20px;
+  width: 150px;
 }

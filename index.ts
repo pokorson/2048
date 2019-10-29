@@ -3,7 +3,8 @@ import GameView from './src/GameViewManager';
 import { GameState } from './src/types';
 
 function handleScoreUpdate(score) {
-    GameView.renderScoreElement(score);
+    gameState.score = gameState.score + score;
+    GameView.renderScoreElement(gameState.score);
 }
 
 const gameState: GameState<BoardState> = {
