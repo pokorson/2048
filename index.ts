@@ -44,6 +44,17 @@ function renderBoard() {
     );
 }
 
+function renderScoreElement() {
+    const scoreElement = document.getElementById('current-score');
+    scoreElement.innerText = `Score: ${gameState.score}`;
+}
+
+function startGame() {
+    initGame();
+    renderBoard();
+    renderScoreElement();
+}
+
 document.addEventListener('keyup', (event) => {
     if (gameState.gameOver) return;
     const arrowKeyDirectionMap = {
@@ -58,24 +69,18 @@ document.addEventListener('keyup', (event) => {
     const board = gameState.board;
 
     board.shiftAllTiles(direction);
-    renderBoard();
+    renderBoard(); // render before all updates for smoother slide animation
 
-    board.mergeTiles();
-    renderBoard();
+    board.sumUpMergedTiles();
 
     board.insertNewTileAtRandom();
     renderBoard();
 })
 
 document.getElementById('start-new-game').addEventListener('click', () => {
-    initGame();
     clearBoardElement();
 
-    const scoreElement = document.getElementById('current-score');
-    scoreElement.innerText = `Score: ${gameState.score}`;
-
-    renderBoard();
+    startGame();
 })
 
-initGame();
-renderBoard();
+startGame();

@@ -126,7 +126,7 @@ class BoardState {
     clearTileAt = (position: BoardPosition) =>
         this.insertTileAt(this.getNewTile(0), position)
 
-    mergeTiles = () => {
+    sumUpMergedTiles = () => {
         this.state.forEach((row, rowIndex) => {
             row.forEach((tile, tileIndex) => {
                 if (Array.isArray(tile)) {
