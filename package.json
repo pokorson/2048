@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "parcel index.html",
     "build": "parcel build index.html",
-    "test": "mocha -r @babel/register -r ts-node/register ./tests/*.spec.**",
-    "test:watch": "mocha --watch -r @babel/register -r ts-node/register ./tests/*.spec.**"
+    "test": "mocha -r @babel/register -r ts-node/register ./tests/*.spec.**"
   },
   "author": "",
   "license": "MIT",
