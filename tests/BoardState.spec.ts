@@ -1,8 +1,8 @@
 import BoardState from '../src/BoardState';
 import { expect } from 'chai';
 
-describe.only('BoardState', () => {
-    describe('#hasPossibleMoves', function () {
+describe('BoardState', () => {
+    describe('#hasAnyPossibleMoves', function () {
         it('returns false when board has no possible moves', function () {
             const board = new BoardState({
                 initialValues: [
@@ -38,9 +38,21 @@ describe.only('BoardState', () => {
             });
             expect(board.hasAnyPossibleMoves()).to.be.true;
         })
+
+        it('returns true when board has at empty tiles', function () {
+            const board = new BoardState({
+                initialValues: [
+                    [0, 0, 0, 0],
+                    [0, 2, 4, 0],
+                    [0, 4, 2, 0],
+                    [0, 0, 0, 0],
+                ]
+            });
+            expect(board.hasAnyPossibleMoves()).to.be.true;
+        })
     })
 
-    describe.only('#moveTiles', function () {
+    describe('#shiftAllTiles', function () {
         const boardValues = [
             [0, 0, 0, 0],
             [0, 2, 4, 0],

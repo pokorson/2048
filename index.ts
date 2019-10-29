@@ -34,6 +34,11 @@ function handleKeyboardAction(event) {
 
     board.insertNewTileAtRandom();
     GameView.renderGame(gameState.board);
+
+    if (!board.hasAnyPossibleMoves()) {
+        gameState.gameOver = true;
+        alert('Game over!');
+    }
 }
 
 const gameState: GameState<BoardState> = {

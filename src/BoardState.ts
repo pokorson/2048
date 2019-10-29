@@ -59,15 +59,23 @@ class BoardState {
     }
 
     hasTileAnyPossibleMoves = (position: BoardPosition): boolean => {
-        return this.isMovePossible(position, { x: 1, y: 0 }) ||
-            this.isMovePossible(position, { x: -1, y: 0 }) ||
-            this.isMovePossible(position, { x: 0, y: 1 }) ||
-            this.isMovePossible(position, { x: 0, y: -1 });
+        const moveVectors = [
+            { x: -1, y: 0 }, // left
+            { x: 0, y: -1 }, // up
+            { x: 0, y: 1 }, // down
+            { x: 1, y: 0 }, // right
+        ];
+        return moveVectors.some(vector => (
+            this.isMovePossible(
+                position,
+                this.getTranslatedPosition(position, vector)
+            )
+        ));
     }
 
     hasAnyPossibleMoves = (): boolean => (
         this.state.some((row, rowIndex) => {
-            row.some((tile, tileIndex) => (
+            return row.some((tile, tileIndex) => (
                 this.hasTileAnyPossibleMoves({ x: tileIndex, y: rowIndex })
             ))
         })
