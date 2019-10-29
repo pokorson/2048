@@ -134,7 +134,7 @@ class BoardState {
         return (tile1.value === tile2.value);
     }
 
-    mergeAdjacentTiles = (targetTilePosition: BoardPosition, tileToMergePosition: BoardPosition) => {
+    mergeTiles = (targetTilePosition: BoardPosition, tileToMergePosition: BoardPosition) => {
         const tileToMerge = this.getTileAt(tileToMergePosition);
         const targetTile = this.getTileAt(targetTilePosition);
 
@@ -181,7 +181,7 @@ class BoardState {
         const targetTile = this.getTileAt(newPosition);
 
         if (this.canMergeTiles(tileToMove, targetTile)) {
-            this.mergeAdjacentTiles(newPosition, startPosition);
+            this.mergeTiles(newPosition, startPosition);
         } else {
             this.moveTile(startPosition, newPosition);
         }
