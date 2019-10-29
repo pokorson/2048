@@ -82,10 +82,10 @@ class BoardState {
     }
 
     hasTileAnyPossibleMoves = (position: BoardPosition): boolean => {
-        return this.canMoveTile(position, { x: 1, y: 0 }) ||
-            this.canMoveTile(position, { x: -1, y: 0 }) ||
-            this.canMoveTile(position, { x: 0, y: 1 }) ||
-            this.canMoveTile(position, { x: 0, y: -1 });
+        return this.isMovePossible(position, { x: 1, y: 0 }) ||
+            this.isMovePossible(position, { x: -1, y: 0 }) ||
+            this.isMovePossible(position, { x: 0, y: 1 }) ||
+            this.isMovePossible(position, { x: 0, y: -1 });
     }
 
     hasAnyPossibleMoves = (): boolean => (
@@ -158,8 +158,7 @@ class BoardState {
         this.clearTileAt(tileToMergePosition);
     }
 
-    canMoveTile = (startPosition: BoardPosition, moveVector: MoveVector): boolean => {
-        const newPosition = { x: startPosition.x + moveVector.x, y: startPosition.y + moveVector.y };
+    isMovePossible = (startPosition: BoardPosition, newPosition: BoardPosition): boolean => {
         const isPositionInRange = (
             newPosition.y < this.state.length &&
             newPosition.y >= 0 &&
@@ -179,7 +178,6 @@ class BoardState {
         return true;
     }
 
-
     moveTile = (startPosition: BoardPosition, endPosition: BoardPosition) => {
         const tileToMove = this.getTileAt(startPosition);
 
@@ -189,11 +187,12 @@ class BoardState {
         this.clearTileAt(startPosition);
     }
 
-    moveOrMergeTile = (startPosition: BoardPosition, vector: MoveVector) => {
-        if (!this.canMoveTile(startPosition, vector)) return;
-
-        const newPosition = this.getTranslatedPosition(startPosition, vector);
+    moveOrMergeTile = (startPosition: BoardPosition, moveVector: MoveVector) => {
         const tileToMove = this.getTileAt(startPosition);
+        const newPosition = this.getTranslatedPosition(startPosition, moveVector)
+
+        if (!this.isMovePossible(startPosition, newPosition)) return;
+
         const targetTile = this.getTileAt(newPosition);
 
         if (this.canMergeTiles(tileToMove, targetTile)) {
@@ -201,20 +200,9 @@ class BoardState {
         } else {
             this.moveTile(startPosition, newPosition);
         }
-    }
 
-    moveSingleTile = (position: BoardPosition, moveVector: MoveVector) => {
-        const tile = this.getTileAt(position);
-
-        if ((!Array.isArray(tile)) && tile.value === 0) return;
-
-        if (!this.canMoveTile(position, moveVector)) return;
-
-        this.moveOrMergeTile(position, moveVector);
-
-        const nextPosition = this.getTranslatedPosition(position, moveVector)
-        this.moveSingleTile(
-            nextPosition,
+        this.moveOrMergeTile(
+            newPosition,
             moveVector
         );
     }
@@ -227,7 +215,7 @@ class BoardState {
                         const position = { x: tileIndex, y: rowIndex };
                         const moveVector = { x: -1, y: 0 };
 
-                        this.moveSingleTile(position, moveVector);
+                        this.moveOrMergeTile(position, moveVector);
                     }
                 }
                 return;
@@ -237,7 +225,7 @@ class BoardState {
                         const moveVector = { x: 0, y: -1 };
                         const position = { x: tileIndex, y: rowIndex };
 
-                        this.moveSingleTile(position, moveVector);
+                        this.moveOrMergeTile(position, moveVector);
                     }
                 }
                 return;
@@ -247,7 +235,7 @@ class BoardState {
                         const moveVector = { x: 1, y: 0 };
                         const position = { x: tileIndex, y: rowIndex };
 
-                        this.moveSingleTile(position, moveVector);
+                        this.moveOrMergeTile(position, moveVector);
                     }
                 }
                 return;
@@ -257,7 +245,7 @@ class BoardState {
                         const moveVector = { x: 0, y: 1 };
                         const position = { x: tileIndex, y: rowIndex };
 
-                        this.moveSingleTile(position, moveVector);
+                        this.moveOrMergeTile(position, moveVector);
                     }
                 }
                 return;
