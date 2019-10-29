@@ -7,6 +7,35 @@ function handleScoreUpdate(score) {
     GameView.renderScoreElement(gameState.score);
 }
 
+function handleNewGameClick() {
+    GameView.clearTiles();
+
+    startGame();
+}
+
+function handleKeyboardAction(event) {
+    if (gameState.gameOver) return;
+
+    const arrowKeyDirectionMap = {
+        'ArrowDown': 'down',
+        'ArrowUp': 'up',
+        'ArrowLeft': 'left',
+        'ArrowRight': 'right'
+    };
+    const direction = arrowKeyDirectionMap[event.key];
+    if (!direction) return;
+
+    const board = gameState.board;
+
+    board.shiftAllTiles(direction);
+    GameView.renderGame(gameState.board); // render before all updates for smoother slide animation
+
+    board.sumUpMergedTiles();
+
+    board.insertNewTileAtRandom();
+    GameView.renderGame(gameState.board);
+}
+
 const gameState: GameState<BoardState> = {
     score: 0,
     board: null,
@@ -31,33 +60,8 @@ function startGame() {
     GameView.renderScoreElement(gameState.score);
 }
 
-document.addEventListener('keyup', (event) => {
-    if (gameState.gameOver) return;
+document.addEventListener('keyup', handleKeyboardAction);
 
-    const arrowKeyDirectionMap = {
-        'ArrowDown': 'down',
-        'ArrowUp': 'up',
-        'ArrowLeft': 'left',
-        'ArrowRight': 'right'
-    };
-    const direction = arrowKeyDirectionMap[event.key];
-    if (!direction) return;
-
-    const board = gameState.board;
-
-    board.shiftAllTiles(direction);
-    GameView.renderGame(gameState.board); // render before all updates for smoother slide animation
-
-    board.sumUpMergedTiles();
-
-    board.insertNewTileAtRandom();
-    GameView.renderGame(gameState.board);
-})
-
-document.getElementById('start-new-game').addEventListener('click', () => {
-    GameView.clearTiles();
-
-    startGame();
-})
+document.getElementById('start-new-game').addEventListener('click', handleNewGameClick);
 
 startGame();
