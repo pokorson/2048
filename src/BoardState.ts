@@ -1,28 +1,5 @@
 import { generateId } from './helpers';
-
-interface Tile {
-    value: number;
-    id: string;
-}
-
-type EmptyTile = {
-    value: 0;
-    id: string;
-}
-
-type TileRow = Array<Tile | EmptyTile | Tile[]>;
-
-type BoardMoveDirection = 'left' | 'right' | 'up' | 'down';
-
-interface BoardPosition {
-    x: number;
-    y: number;
-}
-
-interface MoveVector {
-    x: number;
-    y: number;
-}
+import { TileRow, BoardPosition, MoveVector, Tile, BoardMoveDirection } from './types';
 
 interface BoardStateConstructorArgs {
     initialValues?: number[][];

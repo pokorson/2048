@@ -4,6 +4,15 @@ import '../styles/tiles.scss';
 const TOP_OFFSET = 5;
 const LEFT_OFFSET = 5;
 
+const tilesContainer = document.getElementById('tile-container');
+const tilePlaceholderContainer = document.getElementById('tile-placeholders');
+const scoreContainer = document.getElementById('current-score');
+
+
+function renderScoreElement(score) {
+    scoreContainer.innerText = `Score: ${score}`;
+}
+
 function insertOrUpdateTileElement(tile, position, targetEl) {
     const existingTileElement = document.getElementById(tile.id);
 
@@ -27,9 +36,9 @@ function insertOrUpdateTileElement(tile, position, targetEl) {
     }
 }
 
-function removeStaleElements(board: BoardState, targetEl) {
+function removeStaleElements(board: BoardState) {
     let elementsIds = [];
-    targetEl.childNodes.forEach(node => elementsIds.push(node.id))
+    tilesContainer.childNodes.forEach(node => elementsIds.push(node.id))
     let tilesIds = [];
     board.getState().forEach(row => {
         row.forEach(tile => {
@@ -43,15 +52,14 @@ function removeStaleElements(board: BoardState, targetEl) {
         if (!tilesIds.includes(id)) {
 
             let tileElement = document.getElementById(id);
-            targetEl.removeChild(tileElement);
+            tilesContainer.removeChild(tileElement);
 
         }
     });
 }
 
 function renderTilesPlaceholders(board: BoardState) {
-    const targetEl = document.getElementById('tile-placeholders');
-    targetEl.innerHTML = "";
+    tilePlaceholderContainer.innerHTML = "";
 
     board.getState().forEach(
         (row, rowIndex) => {
@@ -61,37 +69,45 @@ function renderTilesPlaceholders(board: BoardState) {
                     placeholderElement.style.top = (TOP_OFFSET + rowIndex * 125).toString();
                     placeholderElement.style.left = (LEFT_OFFSET + tileIndex * 125).toString();
                     placeholderElement.classList.add('tile-placeholder');
-                    targetEl.appendChild(placeholderElement);
+                    tilePlaceholderContainer.appendChild(placeholderElement);
                 }
             )
         }
     );
 }
 
-const BoardView = {
-    renderBoard: (board: BoardState, targetEl) => {
-        renderTilesPlaceholders(board);
+function renderGame(board) {
+    renderTilesPlaceholders(board);
 
-        board.getState().forEach(
-            (row, rowIndex) => {
-                row.forEach(
-                    (tile, tileIndex) => {
-                        if (Array.isArray(tile)) {
-                            insertOrUpdateTileElement(tile[0], { x: tileIndex, y: rowIndex }, targetEl);
-                            insertOrUpdateTileElement(tile[1], { x: tileIndex, y: rowIndex }, targetEl);
-                            return;
-                        } else if (tile.value === 0) {
-                            return;
-                        } else {
-                            insertOrUpdateTileElement(tile, { x: tileIndex, y: rowIndex }, targetEl);
-                        }
+    board.getState().forEach(
+        (row, rowIndex) => {
+            row.forEach(
+                (tile, tileIndex) => {
+                    if (Array.isArray(tile)) {
+                        insertOrUpdateTileElement(tile[0], { x: tileIndex, y: rowIndex }, tilesContainer);
+                        insertOrUpdateTileElement(tile[1], { x: tileIndex, y: rowIndex }, tilesContainer);
+                        return;
+                    } else if (tile.value === 0) {
+                        return;
+                    } else {
+                        insertOrUpdateTileElement(tile, { x: tileIndex, y: rowIndex }, tilesContainer);
                     }
-                )
-            }
-        );
-        setTimeout(() => removeStaleElements(board, targetEl), 200);
-
-    }
+                }
+            )
+        }
+    );
+    setTimeout(() => removeStaleElements(board), 200); // delay removing merged elements for smoother slide animation
 }
 
-export default BoardView;
+
+function clearTiles() {
+    tilesContainer.innerHTML = "";
+}
+
+const GameViewManager = {
+    clearTiles,
+    renderGame,
+    renderScoreElement
+}
+
+export default GameViewManager;

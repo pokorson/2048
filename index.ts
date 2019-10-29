@@ -1,18 +1,12 @@
 import BoardState from './src/BoardState';
-import BoardView from './src/BoardView';
-
+import GameView from './src/GameViewManager';
+import { GameState } from './src/types';
 
 function handleScoreUpdate(score) {
-    const scoreElement = document.getElementById('current-score');
-    gameState.score = gameState.score + score;
-    scoreElement.innerText = `Score: ${gameState.score}`
+    GameView.renderScoreElement(score);
 }
 
-const gameState: {
-    board: BoardState,
-    score: number,
-    gameOver: boolean
-} = {
+const gameState: GameState<BoardState> = {
     score: 0,
     board: null,
     gameOver: false,
@@ -30,33 +24,15 @@ function initGame() {
     gameState.board.insertNewTileAtRandom();
 }
 
-function clearBoardElement() {
-    const gameContainer = document.getElementById('tile-container');
-    gameContainer.innerHTML = "";
-}
-
-function renderBoard() {
-    const gameContainer = document.getElementById('tile-container');
-
-    BoardView.renderBoard(
-        gameState.board,
-        gameContainer
-    );
-}
-
-function renderScoreElement() {
-    const scoreElement = document.getElementById('current-score');
-    scoreElement.innerText = `Score: ${gameState.score}`;
-}
-
 function startGame() {
     initGame();
-    renderBoard();
-    renderScoreElement();
+    GameView.renderGame(gameState.board);
+    GameView.renderScoreElement(gameState.score);
 }
 
 document.addEventListener('keyup', (event) => {
     if (gameState.gameOver) return;
+
     const arrowKeyDirectionMap = {
         'ArrowDown': 'down',
         'ArrowUp': 'up',
@@ -69,16 +45,16 @@ document.addEventListener('keyup', (event) => {
     const board = gameState.board;
 
     board.shiftAllTiles(direction);
-    renderBoard(); // render before all updates for smoother slide animation
+    GameView.renderGame(gameState.board); // render before all updates for smoother slide animation
 
     board.sumUpMergedTiles();
 
     board.insertNewTileAtRandom();
-    renderBoard();
+    GameView.renderGame(gameState.board);
 })
 
 document.getElementById('start-new-game').addEventListener('click', () => {
-    clearBoardElement();
+    GameView.clearTiles();
 
     startGame();
 })
