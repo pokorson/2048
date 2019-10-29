@@ -8,7 +8,15 @@ $game-board-radius: 5px;
 
 #root {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#game-title {
+  width: 400px;
+  text-align: center;
+  margin: auto;
+  margin-bottom: 30px;
 }
 
 #game-board {
@@ -21,6 +29,11 @@ $game-board-radius: 5px;
   flex-wrap: wrap;
   justify-content: space-around;
   align-items: center;
+  margin-bottom: 20px;
+}
+
+#game-controls {
+  margin-left: 50px;
 }
 
 #start-new-game {
